@@ -8,7 +8,7 @@ char	*get_next_line(int fd)
 	char		*line;
 	static char	*store;
 
-	read_str = read_fd(fd);
+	read_str = read_fd(fd, store);
 	if (!read_str)
 		return (NULL);
 	line = make_line(read_str);
