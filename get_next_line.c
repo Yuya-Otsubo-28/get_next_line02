@@ -21,7 +21,7 @@ static char	*read_fd(int fd, char *store)
 			return (NULL);
 	}
 	read_res = read(fd, res, BUFFER_SIZE);
-	while (!ft_strchr(tmp, '\n') && read_size > 0)
+	while (!ft_strchr(tmp, '\n') && read_res > 0)
 	{
 		read_res = read(fd, tmp, BUFFER_SIZE);
 		if (read_res == -1)
@@ -56,5 +56,5 @@ char	*get_next_line(int fd)
 		free(line);
 		return (NULL);
 	}
-	return (res);
+	return (line);
 }
