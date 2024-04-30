@@ -1,6 +1,6 @@
 #include "get_next_line.h"
 
-#define BUFFER_SIZE 42
+#define BUFFER_SIZE 3
 
 static char	*map_and_free(char *res, char *for_free)
 {
@@ -14,14 +14,15 @@ static char	*read_fd(int fd, char *store)
 	char	tmp[BUFFER_SIZE + 1];
 	int		read_res;
 
+	res = NULL;
 	if (store)
 	{
 		res = ft_strjoin(res, store);
 		if (!res)
 			return (NULL);
 	}
-	read_res = read(fd, res, BUFFER_SIZE);
-	while (!ft_strchr(tmp, '\n') && read_res > 0)
+	read_res = 1;
+	while (1)
 	{
 		read_res = read(fd, tmp, BUFFER_SIZE);
 		if (read_res == -1)
@@ -30,6 +31,8 @@ static char	*read_fd(int fd, char *store)
 		res = map_and_free(ft_strjoin(res, tmp), res);
 		if (!res)
 			return (NULL);
+		if (ft_strchr(tmp, '\n') || read_res <= 0)
+			break ;
 	}
 	return (res);
 }
@@ -58,3 +61,17 @@ char	*get_next_line(int fd)
 	}
 	return (line);
 }
+
+// int	main(void)
+// {
+// 	int		fd;
+// 	char	*res;
+// 	char	*store = NULL;
+
+// 	fd = open("test.txt", O_RDONLY);
+// 	res = read_fd(fd, store);
+// 	printf("res: %s\n", res);
+// 	free(res);
+// 	close(fd);
+// 	return (0);
+// }
