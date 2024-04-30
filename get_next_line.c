@@ -1,6 +1,6 @@
 #include "get_next_line.h"
 
-#define BUFFER_SIZE 3
+#define BUFFER_SIZE 12
 
 static char	*map_and_free(char *res, char *for_free)
 {
@@ -37,6 +37,20 @@ static char	*read_fd(int fd, char *store)
 	return (res);
 }
 
+static	char *make_line(char *read_str)
+{
+	size_t	len;
+	char	*res;
+
+	len = 0;
+	while (read_str[len] && read_str[len] != '\n')
+		len++;
+	res = ft_substr(read_str, 0, len);
+	if (!res)
+		return (NULL);
+	return (res);
+}
+
 // char	*get_next_line(int fd)
 // {
 // 	char		*read_str;
@@ -62,18 +76,22 @@ static char	*read_fd(int fd, char *store)
 // 	return (line);
 // }
 
-// int	main(void)
-// {
-// 	int		fd;
-// 	char	*res;
-// 	// char	*store = ft_strdup("yes!!\n");
-// 	char	*store = NULL;
+int	main(void)
+{
+	int		fd;
+	char	*res;
+	char	*line;
+	// char	*store = ft_strdup("yes!!\n");
+	char	*store = NULL;
 
-// 	fd = open("test.txt", O_RDONLY);
-// 	res = read_fd(fd, store);
-// 	printf("res: %s\n", res);
-// 	free(res);
-// 	// free(store);
-// 	close(fd);
-// 	return (0);
-// }
+	fd = open("test.txt", O_RDONLY);
+	res = read_fd(fd, store);
+	printf(" res: %s\n", res);
+	line = make_line(res);
+	printf("line: %s\n", line);
+	free(res);
+	free(line);
+	// free(store);
+	close(fd);
+	return (0);
+}

@@ -74,3 +74,31 @@ char	*ft_strdup(const char *str)
 	res[i] = '\0';
 	return (res);
 }
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	size_t	i;
+	size_t	s_len;
+	char	*res;
+
+	if (!s)
+		return (NULL);
+	if (!len)
+		return (ft_strdup(""));
+	s_len = ft_strlen(s);
+	if (start >= s_len)
+		len = 0;
+	else if (len > s_len - start)
+		len = s_len - start;
+	res = (char *)malloc(sizeof(char) * (len + 1));
+	if (!res)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		res[i] = s[start + i];
+		i++;
+	}
+	res[i] = '\0';
+	return (res);
+}
