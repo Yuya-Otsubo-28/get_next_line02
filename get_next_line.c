@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yuotsubo <yuotsubo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/07 16:49:41 by yuotsubo          #+#    #+#             */
+/*   Updated: 2024/05/07 16:49:41 by yuotsubo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
-#define BUFFER_SIZE 13
+// #define BUFFER_SIZE 1
 
 static char	*map_and_free(char *res, char *for_free)
 {
@@ -15,9 +27,16 @@ static char	*read_fd(int fd, char *store)
 	int		read_res;
 
 	res = NULL;
-	if (store && store[0])
+	if (store && !store[0])
+	{
+		free(store);
+		store = NULL;
+	}
+	if (store)
 	{
 		res = ft_strjoin(res, store);
+		free(store);
+		store = NULL;
 		if (!res)
 			return (NULL);
 	}
@@ -27,8 +46,16 @@ static char	*read_fd(int fd, char *store)
 		if (ft_strchr(res, '\n'))
 			break ;
 		read_res = read(fd, tmp, BUFFER_SIZE);
-		if (read_res <= 0)
+		if (!read_res)
 			break ;
+		if (read_res < 0)
+		{
+			if (res)
+				free(res);
+			if (store)
+				free(store);
+			return (NULL);
+		}
 		tmp[read_res] = '\0';
 		res = map_and_free(ft_strjoin(res, tmp), res);
 		if (!res)
@@ -42,8 +69,8 @@ static	char *make_line(char *read_str)
 	size_t	len;
 	char	*line;
 
-	len = 0;
-	while (read_str[len] && read_str[len] != '\n')
+	len = ft_strclen(read_str, '\n');
+	if (ft_strchr(read_str, '\n'))
 		len++;
 	line = ft_substr(read_str, 0, len);
 	if (!line)
@@ -95,26 +122,28 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-int	main(void)
-{
-	int		fd;
-	char	*res;
-	int	i = 0;
+// int	main(void)
+// {
+// 	int		fd;
+// 	char	*res;
 
-	fd = open("test.txt", O_RDONLY);
-	printf("res: %s\n", get_next_line(fd));
-	printf("res: %s\n", get_next_line(fd));
-	printf("res: %s\n", get_next_line(fd));
-	printf("res: %s\n", get_next_line(fd));
-	printf("res: %s\n", get_next_line(fd));
-	// while (i++ < 4)
-	// {
-	// 	res = get_next_line(fd);
-	// 	printf("res: %s", res); fflush(stdout);
-	// 	if (!res)
-	// 		break ;
-	// 	free(res);
-	// }
-	close(fd);
-	return (0);
-}
+// 	fd = open("test.txt", O_RDONLY);
+// 	res = get_next_line(fd);
+// 	printf("res: %s\n", res);
+// 	if (res)
+// 		free(res);
+// 	res = get_next_line(fd);
+// 	printf("res: %s\n", res);
+// 	if (res)
+// 		free(res);
+// 	res = get_next_line(fd);
+// 	printf("res: %s\n", res);
+// 	if (res)
+// 		free(res);
+// 	res = get_next_line(fd);
+// 	printf("res: %s\n", res);
+// 	if (res)
+// 		free(res);
+// 	close(fd);
+// 	return (0);
+// }
