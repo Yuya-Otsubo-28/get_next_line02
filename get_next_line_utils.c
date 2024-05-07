@@ -1,4 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yuotsubo <yuotsubo@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/07 21:00:40 by yuotsubo          #+#    #+#             */
+/*   Updated: 2024/05/07 21:00:40 by yuotsubo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
+
+char	*map_and_free(char *res, char *for_free)
+{
+	if (for_free)
+		free(for_free);
+	return (res);
+}
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
@@ -21,35 +40,21 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	j = 0;
 	while (s2[j])
 		res [i++] = s2[j++];
-	res[i] = 0;
+	res[i] = '\0';
 	return (res);
 }
 
-char	*ft_strchr(const char *s, int c)
+ssize_t	ft_strclen(const char *s, char c)
 {
-	size_t	i;
+	ssize_t	i;
 
-	i = 0;
 	if (!s)
-		return (NULL);
-	while (s[i])
-	{
-		if (s[i] == (char)c)
-			return ((char *)&s[i]);
-		i++;
-	}
-	if (!c)
-		return ((char *)&s[i]);
-	return (NULL);
-}
-
-size_t	ft_strclen(const char *s, char c)
-{
-	size_t	i;
-
+		return (-1);
 	i = 0;
 	while (s[i] && s[i] != c)
 		i++;
+	if (!s[i] && c)
+		return (-1);
 	return (i);
 }
 
@@ -75,27 +80,9 @@ char	*ft_strdup(const char *str)
 	return (res);
 }
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
-{
-	size_t	i;
-	size_t	res;
-
-	res = ft_strclen(src, '\0');
-	if (!dstsize)
-		return (res);
-	i = 0;
-	while (src[i] && --dstsize)
-	{
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-	return (res);
-}
-
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	size_t	i;
+	ssize_t	i;
 	size_t	s_len;
 	char	*res;
 
@@ -103,7 +90,9 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		return (NULL);
 	if (!len)
 		return (ft_strdup(""));
-	s_len = ft_strclen(s, '\0');
+	s_len = 0;
+	while (s[s_len])
+		s_len++;
 	if (start >= s_len)
 		len = 0;
 	else if (len > s_len - start)
@@ -111,12 +100,9 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	res = (char *)malloc(sizeof(char) * (len + 1));
 	if (!res)
 		return (NULL);
-	i = 0;
-	while (i < len)
-	{
+	i = -1;
+	while (++i < (ssize_t)len)
 		res[i] = s[start + i];
-		i++;
-	}
 	res[i] = '\0';
 	return (res);
 }

@@ -12,11 +12,23 @@
 
 #include "get_next_line.h"
 
-// #define BUFFER_SIZE 1
-
-static char	*map_and_free(char *res, char *for_free)
+static char	*join_store(char *store)
 {
-	free(for_free);
+	char	*res;
+
+	res = NULL;
+	if (store && !store[0])
+	{
+		store = map_and_free(NULL, store);
+		return (NULL);
+	}
+	if (store)
+	{
+		res = ft_strjoin(res, store);
+		store = map_and_free(NULL, store);
+		if (!res)
+			return (NULL);
+	}
 	return (res);
 }
 
@@ -26,34 +38,17 @@ static char	*read_fd(int fd, char *store)
 	char	tmp[BUFFER_SIZE + 1];
 	int		read_res;
 
-	res = NULL;
-	if (store && !store[0])
-	{
-		free(store);
-		store = NULL;
-	}
-	if (store)
-	{
-		res = ft_strjoin(res, store);
-		free(store);
-		store = NULL;
-		if (!res)
-			return (NULL);
-	}
+	res = join_store(store);
 	read_res = 1;
-	while (1)
+	while (ft_strclen(res, '\n') < 0)
 	{
-		if (ft_strchr(res, '\n'))
-			break ;
 		read_res = read(fd, tmp, BUFFER_SIZE);
 		if (!read_res)
 			break ;
 		if (read_res < 0)
 		{
-			if (res)
-				free(res);
-			if (store)
-				free(store);
+			res = map_and_free(NULL, res);
+			store = map_and_free(NULL, store);
 			return (NULL);
 		}
 		tmp[read_res] = '\0';
@@ -64,13 +59,15 @@ static char	*read_fd(int fd, char *store)
 	return (res);
 }
 
-static	char *make_line(char *read_str)
+static char	*make_line(char *read_str)
 {
-	size_t	len;
+	ssize_t	len;
 	char	*line;
 
 	len = ft_strclen(read_str, '\n');
-	if (ft_strchr(read_str, '\n'))
+	if (len < 0)
+		len = ft_strclen(read_str, '\0');
+	else
 		len++;
 	line = ft_substr(read_str, 0, len);
 	if (!line)
@@ -83,11 +80,12 @@ static char	*make_store(char *read_str)
 	char	*endl;
 	char	*store;
 	size_t	len;
+	ssize_t	index_n;
 
-	endl = ft_strchr(read_str, '\n');
-	if (!endl)
+	index_n = ft_strclen(read_str, '\n');
+	if (index_n < 0)
 		return (ft_strdup(""));
-	endl++;
+	endl = read_str + index_n + 1;
 	len = 0;
 	while (endl[len])
 		len++;
@@ -109,14 +107,14 @@ char	*get_next_line(int fd)
 	line = make_line(read_str);
 	if (!line)
 	{
-		free(read_str);
+		read_str = map_and_free(NULL, read_str);
 		return (NULL);
 	}
 	store = make_store(read_str);
-	free(read_str);
+	read_str = map_and_free(NULL, read_str);
 	if (!store)
 	{
-		free(line);
+		line = map_and_free(NULL, line);
 		return (NULL);
 	}
 	return (line);
